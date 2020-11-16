@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" crossorigin=""/>
 <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet-src.js" crossorigin=""></script>
 
-<script src="dist/L.LabelTextCollision.js"></script>
+<script src="../src/L.LabelTextCollision.js"></script>
 
 <script src="data.js" charset="utf-8"></script>
 </head>
@@ -15,53 +15,65 @@
     <br>
     <input type="checkbox" checked onclick="setCollisionDetection(this.checked)"> Collision detection
     <script>
-                    var osmUrl = 'http://tile.openstreetmap.jp/{z}/{x}/{y}.png'
-                    var osmAttrib = 'Map data  <a href="http://openstreetmap.jp">OpenStreetMap</a> contributors';
-                    var osm = new L.TileLayer(
-                            osmUrl, {
-                                maxZoom : 18,
-                                attribution : osmAttrib
-                            });
+        var osmUrl = 'http://tile.openstreetmap.jp/{z}/{x}/{y}.png'
+        var osmAttrib = 'Map data  <a href="http://openstreetmap.jp">OpenStreetMap</a> contributors';
+        var osm = new L.TileLayer(
+                osmUrl, {
+                    maxZoom : 18,
+                    attribution : osmAttrib
+                });
 
-                    var labelTextCollision = new L.LabelTextCollision({
-                            collisionFlg : true
-                        });
+        var labelTextCollision = new L.LabelTextCollision({
+                collisionFlg : true
+            });
 
-                    var map = new L.Map('map', {
-                        layers : [ osm ],
-                        center : new L.LatLng(35.695786, 139.749213),
-                        zoom : 10,
-                        renderer : labelTextCollision
-                    });
+        var map = new L.Map('map', {
+            layers : [ osm ],
+            center : new L.LatLng(39.905963, 116.390813),
+            zoom : 10,
+            renderer : labelTextCollision
+        });
 
-                    var p = L.polyline(
-                            [ [ 35.695786, 139.749213 ],
-                                    [ 35.696786, 139.748213 ],
-                                    [ 35.695786, 139.747213 ] ], {
-                                weight : 12,
-                                color : '#fe57a1',
-                                text : 'Leaflet.LabelTextCollision!!!!!!!!'
-                            }).addTo(map);
-
-                    var layers = L.featureGroup().addTo(map);
-
-                    for ( var index in data) {
-                        var d = data[index];
-                        var latlng = L.latLng(d[0], d[1]);
-                        var c = L.circleMarker(latlng, {
-                            radius : 5,
-                            text : latlng.toString()
-                        });
-                        layers.addLayer(c);
-                        if (index == 3000) {
-                            break;
-                        }
+        var p = L.polyline(
+                [ [ 39.695786, 116.749213 ],
+                        [ 39.696786, 116.748213 ],
+                        [ 39.695786, 116.747213 ] ], {
+                    weight : 12,
+                    color : '#fe57a1',
+                    text : 'Leaflet.LabelTextCollision!!!!!!!!',
+                    textStyle: {
+                        stroke: true,
+                        color: '#ff0000',
+                        font: "16px 'Microsoft Yahei'",
                     }
+                }).addTo(map);
 
-                    function setCollisionDetection(flg) {
-                        labelTextCollision.options.collisionFlg = flg;
-                        map.fitBounds(map.getBounds());
-                    }
-                </script>
+        var layers = L.featureGroup().addTo(map);
+
+        for (var i = 0; i < 50000; i++) {
+            var lat = 39.905963 + (Math.random() - Math.random()) * 3;
+            var lng = 116.390813 + (Math.random() - Math.random()) * 3;
+            var latlng = L.latLng(lat, lng);
+
+            var c = L.circleMarker(latlng, {
+                radius : 5,
+                text : latlng.toString(),
+                textStyle: {
+                    stroke: true,
+                    color: '#3388ff',
+                    font: "15px 'Microsoft Yahei'",
+                    offsetX: -70,
+                    offsetY: -10,
+                }
+            });
+            layers.addLayer(c);
+
+        }
+
+        function setCollisionDetection(flg) {
+            labelTextCollision.options.collisionFlg = flg;
+            map.fitBounds(map.getBounds());
+        }
+    </script>
 </body>
 </html>

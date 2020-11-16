@@ -121,76 +121,79 @@ L.LabelTextCollision = L.Canvas
 
             _updatePoly : function(layer, closed) {
                 L.Canvas.prototype._updatePoly.call(this, layer, closed);
-                this._text(this._ctxLabel, layer);
+                if(this._map.getBounds().contains(layer.getBounds())){
+                    this._text(this._ctxLabel, layer);
+                }
             },
 
             _updateCircle : function(layer) {
                 L.Canvas.prototype._updateCircle.call(this, layer);
-                this._text(this._ctxLabel, layer);
+                if(this._map.getBounds().contains(layer.getLatLng())){
+                    this._text(this._ctxLabel, layer);
+                }
             },
 
             _text : function(ctx, layer) {
 
-                if (layer.options.text != undefined) {
+                var text = layer.options.text;
+                if (text == null) return;
 
-                    ctx.globalAlpha = 1;
+                //文字样式
+                var textStyle = layer.options.textStyle || {};
 
-                    var p = layer._point;
-                    var textPoint;
+                ctx.save();
+                ctx.globalAlpha = 1;
 
-                    if (p == undefined) {
-                        // polygon or polyline
-                        if (layer._parts.length == 0
-                                || layer._parts[0].length == 0) {
+                var p = layer._point;
+                var textPoint;
+
+                if (p == undefined) {
+                    // polygon or polyline
+                    if (layer._parts.length == 0 || layer._parts[0].length == 0) {
+                        return;
+                    }
+                    p = this._getCenter(layer._parts[0]);
+                }
+
+                // label bounds offset
+                var offsetX = textStyle.offsetX || 0;
+                var offsetY = textStyle.offsetY || 0;
+
+                /**
+                 * TODO setting for custom font
+                 */
+                ctx.lineWidth = 4.0;
+                ctx.font = textStyle.font || "16px 'Microsoft Yahei'";
+
+
+                // Collision detection
+                if (this.options.collisionFlg) {
+                    var textWidth = (ctx.measureText(text).width) + p.x;// + offsetX; 
+                    var textHeight = p.y + offsetY + 20;
+                    var bounds = L.bounds(L.point(p.x + offsetX, p.y + offsetY), L.point(textWidth, textHeight));
+                    for (var index in this._textList) {
+                        var pointBounds = this._textList[index];
+                        if (pointBounds.intersects(bounds)) {
                             return;
                         }
-                        p = this._getCenter(layer._parts[0]);
                     }
-
-                    // label bounds offset
-                    var offsetX = 0;
-                    var offsetY = 0;
-
-                    /**
-                     * TODO setting for custom font
-                     */
-                    ctx.lineWidth = 4.0;
-                    ctx.font = "16px 'Meiryo'";
-
-                    // Collision detection
-                    var textWidth = (ctx.measureText(layer.options.text).width)
-                            + p.x;// + offsetX;
-
-                    var textHeight = p.y + offsetY + 20;
-
-                    var bounds = L.bounds(
-                            L.point(p.x + offsetX, p.y + offsetY), L.point(
-                                    textWidth, textHeight));
-
-                    if (this.options.collisionFlg) {
-
-                        for ( var index in this._textList) {
-                            var pointBounds = this._textList[index];
-                            if (pointBounds.intersects(bounds)) {
-                                return;
-                            }
-                        }
-                    }
-
                     this._textList.push(bounds);
+                }
 
-                    ctx.strokeStyle = "white";
-                    ctx.strokeText(layer.options.text, p.x + offsetX, p.y
-                            + offsetY);
+                if (textStyle.stroke) {
+                    ctx.strokeStyle = textStyle.strokeColor || "white";
+                    ctx.strokeText(text, p.x + offsetX, p.y + offsetY);
+                }
+                ctx.fillStyle = textStyle.color || "blue";
 
-                    if (layer.options.textColor == undefined) {
-                        ctx.fillStyle = "blue";
-                    } else {
-                        ctx.fillStyle = layer.options.textColor;
-                    }
-
-                    ctx.fillText(layer.options.text, p.x + offsetX, p.y
-                            + offsetY);
+                if (textStyle.rotate) {//有旋转角度
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(textStyle.rotate * Math.PI / 180);
+                    ctx.fillText(text, 0, 0);
+                    ctx.restore();
+                }
+                else {
+                    ctx.fillText(text, p.x + offsetX, p.y + offsetY);
                 }
             },
 
