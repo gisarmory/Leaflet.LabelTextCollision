@@ -8,7 +8,6 @@
 
 <script src="../src/L.LabelTextCollision.js"></script>
 
-<script src="data.js" charset="utf-8"></script>
 </head>
 <body>
     <div id="map" style="width: 60%; height: 600px"></div>
@@ -50,7 +49,7 @@
 
         var layers = L.featureGroup().addTo(map);
 
-        for (var i = 0; i < 50000; i++) {
+        for (var i = 0; i < 10000; i++) {   //最高可到5万左右
             var lat = 39.905963 + (Math.random() - Math.random()) * 3;
             var lng = 116.390813 + (Math.random() - Math.random()) * 3;
             var latlng = L.latLng(lat, lng);

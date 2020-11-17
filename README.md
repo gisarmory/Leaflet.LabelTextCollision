@@ -39,6 +39,13 @@ L.polyline(
       weight : 12,
       color : '#fe57a1',
       text : 'Leaflet.LabelTextCollision!!!!!!!!'
+      textStyle: {
+        stroke: true,
+        color: '#ff0000',
+        font: "16px 'Microsoft Yahei'",
+        offsetX: 0,
+        offsetY: 0,
+    }
   }).addTo(map);
 ```
 
