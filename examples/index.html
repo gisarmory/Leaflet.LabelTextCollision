@@ -14,22 +14,15 @@
     <br>
     <input type="checkbox" checked onclick="setCollisionDetection(this.checked)"> Collision detection
     <script>
-        var osmUrl = 'http://tile.openstreetmap.jp/{z}/{x}/{y}.png'
-        var osmAttrib = 'Map data  <a href="http://openstreetmap.jp">OpenStreetMap</a> contributors';
-        var osm = new L.TileLayer(
-                osmUrl, {
-                    maxZoom : 18,
-                    attribution : osmAttrib
-                });
-
+        var baseMap = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png');
         var labelTextCollision = new L.LabelTextCollision({
                 collisionFlg : true
             });
 
         var map = new L.Map('map', {
-            layers : [ osm ],
+            layers : [ baseMap ],
             center : new L.LatLng(39.905963, 116.390813),
-            zoom : 10,
+            zoom : 14,
             renderer : labelTextCollision
         });
 
